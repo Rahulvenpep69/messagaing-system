@@ -39,3 +39,11 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# macOS resource forks & metadata (never commit these)
+._*
+**/.DS_Store
+.DS_Store
+._.DS_Store
+.AppleDouble
+.LSOverride

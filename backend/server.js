@@ -76,19 +76,10 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Serve frontend static files in production
-if (process.env.NODE_ENV === 'production') {
-  app.use(express.static(path.join(__dirname, 'public')));
-  // All non-API routes serve the React app
-  app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-  });
-} else {
-  // Handle undefined routes in dev
-  app.use('*', (req, res) => {
-    res.status(404).json({ message: 'Route not found' });
-  });
-}
+// Handle undefined API routes (pure backend behavior)
+app.use('*', (req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
 
 // Error handling
 app.use(errorHandler);

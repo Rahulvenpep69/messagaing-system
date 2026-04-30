@@ -60,8 +60,8 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/ticketing
   }
 })
 .catch((error) => {
-  logger.error('MongoDB connection error:', error);
-  process.exit(1);
+  logger.error('MongoDB connection error:', error.message);
+  logger.error('Ensure your MongoDB Atlas IP Access List is set to 0.0.0.0/0 (Allow Access from Anywhere) for Railway deployment.');
 });
 
 // Routes
@@ -95,7 +95,7 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT, '0.0.0.0', () => {
   logger.info(`Server running on port ${PORT}`);
 });
 

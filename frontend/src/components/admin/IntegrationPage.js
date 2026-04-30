@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from 'react-query';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import axios from '../../api';
+
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { 

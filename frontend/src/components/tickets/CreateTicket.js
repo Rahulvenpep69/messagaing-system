@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from 'react-query';
 import { useForm } from 'react-hook-form';
-import axios from 'axios';
+import axios from '../../api';
+
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../common/LoadingSpinner';
 import { ArrowLeft, Send } from 'lucide-react';

@@ -4,6 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 require('dotenv').config();
 
 const logger = require('./utils/logger');
@@ -29,10 +30,18 @@ const limiter = rateLimit({
 
 // Middleware
 app.use(helmet());
+const allowedOrigins = [
+  process.env.FRONTEND_URL || 'http://localhost:3000',
+  'https://messagaing-system-production.up.railway.app'
+];
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) return callback(null, true);
+    callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
+app.set('trust proxy', 1);
 app.use(limiter);
 app.use(morgan('combined', { stream: { write: message => logger.info(message.trim()) } }));
 app.use(express.json({ limit: '10mb' }));
@@ -67,13 +76,22 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// Serve frontend static files in production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/build')));
+  // All non-API routes serve the React app
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/build', 'index.html'));
+  });
+} else {
+  // Handle undefined routes in dev
+  app.use('*', (req, res) => {
+    res.status(404).json({ message: 'Route not found' });
+  });
+}
+
 // Error handling
 app.use(errorHandler);
-
-// Handle undefined routes
-app.use('*', (req, res) => {
-  res.status(404).json({ message: 'Route not found' });
-});
 
 const PORT = process.env.PORT || 5000;
 
